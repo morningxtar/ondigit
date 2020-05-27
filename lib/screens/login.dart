@@ -124,6 +124,7 @@ class LoginScreenState extends State<LoginSreen> {
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
+
                 }
               },
               //since this is only a UI app
@@ -179,6 +180,10 @@ class LoginScreenState extends State<LoginSreen> {
     );
   }
 
+  bool isAuthenticated(String email, String password){
+
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(key: _scaffoldKey, body: loginScreen());

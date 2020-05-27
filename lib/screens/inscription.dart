@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ondigit/apis/getData.dart';
 import 'package:ondigit/models/inscription.dart';
+import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +20,15 @@ class InscriptioncreenState extends State<InscriptionSreen> {
   SharedPreferences _sharedPreferences;
   var _formKey = GlobalKey<FormState>();
   Inscription _inscription = Inscription();
+  Future<List<String>> services;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      services = fetchService();
+    });
+  }
 
   Widget loginScreen() {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
