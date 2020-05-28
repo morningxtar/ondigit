@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ondigit/apis/getData.dart';
-import 'package:ondigit/screens/login.dart';
+import 'package:ondigit/splash_screen.dart';
 
 ThemeData appTheme = ThemeData(
     fontFamily: 'Oxygen'
@@ -31,7 +30,7 @@ class _OnDigitState extends State<OnDigit> {
       title: 'On Digit',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: new LoginSreen(),
+      home: new SplashPage(),
     );
   }
 }

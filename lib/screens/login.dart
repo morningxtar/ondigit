@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ondigit/apis/getData.dart';
 import 'package:ondigit/models/Login.dart';
+import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/screens/inscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,10 +21,19 @@ class LoginScreenState extends State<LoginSreen> {
   SharedPreferences _sharedPreferences;
   Login _login = Login();
 
+  @override
+  void initState(){
+    // TODO: implement initState
+    super.initState();
+
+  }
+
+
   Widget loginScreen() {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+
     return Stack(
       children: <Widget>[
         Container(
@@ -124,6 +135,16 @@ class LoginScreenState extends State<LoginSreen> {
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
+                  setState(() {
+                    if (isAuthenticated(_login.email, _login.password)) {
+//                      Navigator.pushReplacement(
+//                  context,
+//                  MaterialPageRoute(builder: (context) => InscriptionSreen()),
+//                );
+                    }
+
+
+                  });
 
                 }
               },
@@ -180,10 +201,17 @@ class LoginScreenState extends State<LoginSreen> {
     );
   }
 
-  bool isAuthenticated(String email, String password){
 
-    return true;
+  bool isAuthenticated(String email, String password){
+    print(check);
+
+    setState(() {
+      isValidUser(email, password, context);
+    });
+
+    return check;
   }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(key: _scaffoldKey, body: loginScreen());

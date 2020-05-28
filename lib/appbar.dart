@@ -1,0 +1,14 @@
+import 'package:flutter/material.dart';
+
+Widget appbar(String onglet){
+  return AppBar(
+    title: new Text(onglet,
+        style: TextStyle(
+            fontFamily: "Poppins-Bold",
+            //color: appTheme.primaryColor,
+            //fontSize: ScreenUtil.getInstance().setSp(46),
+            letterSpacing: .9,
+            fontWeight: FontWeight.bold)), backgroundColor: Colors.green,
+    actions: <Widget>[],
+  );
+}

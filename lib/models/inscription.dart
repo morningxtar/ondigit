@@ -1,5 +1,6 @@
 class Inscription {
 
+  var id;
   String firstName;
   String lastName;
   String phoneNumber;
@@ -9,6 +10,7 @@ class Inscription {
   String userType;
 
   Inscription({
+    this.id,
     this.firstName,
     this.lastName,
     this.phoneNumber,
@@ -17,4 +19,17 @@ class Inscription {
     this.comments,
     this.userType,
   });
+
+  factory Inscription.fromJson(Map<String, dynamic> json) {
+    return Inscription(
+      id: json['id'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      phoneNumber: json['phoneNumber'],
+      email: json['email'],
+      password: json['password'],
+      comments: json['comments'],
+      userType: json['userType'],
+    );
+  }
 }

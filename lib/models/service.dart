@@ -1,6 +1,6 @@
 class Service {
 
-  int id;
+  var id;
   String libelle;
 
   Service({this.id ,this.libelle});
