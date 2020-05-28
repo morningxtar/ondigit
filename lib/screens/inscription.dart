@@ -21,6 +21,7 @@ class InscriptioncreenState extends State<InscriptionSreen> {
   var _formKey = GlobalKey<FormState>();
   Inscription _inscription = Inscription();
   Future<List<String>> services;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -217,30 +218,62 @@ class InscriptioncreenState extends State<InscriptionSreen> {
           ),
           Padding(
             padding: EdgeInsets.only(top: 20),
-            child: MaterialButton(
-              onPressed: () {
+            child: Builder(
+              builder: (context) => MaterialButton(
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    testEmail(_inscription.email).then((value) {
+                      if (value) {
+                        final snackBar = SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text('L\'email existe déjà!'),
 
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  print(_inscription.userType);
-                }
-              },
-              //since this is only a UI app
-              child: Text(
-                'INSCRIPTION',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'SFUIDisplay',
-                  fontWeight: FontWeight.bold,
+                          backgroundColor: Colors.blue.shade900,
+                          action: SnackBarAction(
+                            label: 'retour',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
+                      } else {
+                        createUser(_inscription).then((value) {
+                          final snackBar = SnackBar(
+                            content: Text('Inscription réussie!'),
+                            action: SnackBarAction(
+                              label: 'retour',
+                              onPressed: () {
+                                // Some code to undo the change.
+                              },
+                            ),
+                          );
+                          Navigator.pushReplacement(
+                              context, MaterialPageRoute(builder: (context) => LoginSreen()));
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        });
+                      }
+                    });
+                  }
+                },
+                //since this is only a UI app
+                child: Text(
+                  'INSCRIPTION',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'SFUIDisplay',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                color: Colors.green,
+                elevation: 0,
+                minWidth: 400,
+                height: 50,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              color: Colors.green,
-              elevation: 0,
-              minWidth: 400,
-              height: 50,
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
           ),
           Padding(

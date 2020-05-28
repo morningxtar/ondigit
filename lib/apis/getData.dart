@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ondigit/constante.dart';
 import 'package:ondigit/loginLoad.dart';
+import 'package:ondigit/models/Place.dart';
 import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/inscription.dart';
@@ -12,6 +13,7 @@ import 'package:ondigit/screens/inscription.dart';
 List<Service> _services = new List<Service>();
 
 List<String> _listService = new List();
+
 Future<List<String>> fetchService() async {
   final response = await http.get(apiService);
   var dio = new Dio();
@@ -54,11 +56,63 @@ Future<Inscription> createUser(Inscription user) async {
       'userType': user.userType,
     }),
   );
+  print(response.body.contains('ConstraintViolationException'));
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-
     return Inscription.fromJson(json.decode(response.body));
+//    List responseJson = json.decode(response.body);
+//    return responseJson.map((m) => new Service.fromJson(m)).toList();
+  } else if (response.statusCode == 500) {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    if (response.body.contains('ConstraintViolationException')) {
+      print('L\'email existe déjà');
+    }
+  } else {
+    print(Exception);
+    throw Exception('Failed to load');
+  }
+}
+
+Future<Place> createReservation(Place place) async {
+  final http.Response response = await http.post(
+    apiSaveReservation,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'serviceType': place.serviceType,
+      'computerNumber': place.computerNumber,
+      'dateReservation': place.dateReservation,
+      'timeReservation': place.timeReservation,
+      'userEmail': place.userEmail,
+      'access': place.access,
+    }),
+  );
+  print(response.body.contains('ConstraintViolationException'));
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Place.fromJson(json.decode(response.body));
+//    List responseJson = json.decode(response.body);
+//    return responseJson.map((m) => new Service.fromJson(m)).toList();
+  } else {
+    print(Exception);
+    throw Exception('Failed to load');
+  }
+}
+
+Future<bool> testEmail(String email) async {
+  final response = await http.get(apiService);
+  var dio = new Dio();
+  final response1 = await dio.get(apiTestEmail + '?email=' + email);
+
+  if (response1.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    if (response1.data.length > 0) return true;
+    else return false;
 //    List responseJson = json.decode(response.body);
 //    return responseJson.map((m) => new Service.fromJson(m)).toList();
   } else {
@@ -70,11 +124,14 @@ Future<Inscription> createUser(Inscription user) async {
 
 bool check = false;
 Inscription userConnected = new Inscription();
-Future<Inscription> isValidUser(String email, String password, BuildContext context) async {
+
+Future<Inscription> isValidUser(
+    String email, String password, BuildContext context) async {
   final response = await http
       .get(apiConnexion + '?email=' + email + '&password=' + password);
   var dio = new Dio();
-  final response1 = await dio.get(apiConnexion + '?email=' + email + '&password=' + password);
+  final response1 =
+      await dio.get(apiConnexion + '?email=' + email + '&password=' + password);
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -93,22 +150,19 @@ Future<Inscription> isValidUser(String email, String password, BuildContext cont
       //userConnected = Inscription.fromJson(json.decode(response1.data));
       check = true;
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginLoading()));
+          context, MaterialPageRoute(builder: (context) => LoginLoading()));
       return userConnected;
-    }
-    else{
+    } else {
       check = false;
       return null;
     }
-
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
     throw Exception('Failed to load');
   }
 
-  Inscription getUser(Inscription user){
+  Inscription getUser(Inscription user) {
     return user;
   }
 }
