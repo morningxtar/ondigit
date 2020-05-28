@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/utils/navigation_utils.dart';
 
+import 'screens/reservationScreen.dart';
+
 class SplashPage extends StatefulWidget {
   @override
   _SplashPageState createState() => _SplashPageState();
@@ -14,7 +16,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 3), () {
-      NavigationUtils.pushReplacement(context, LoginSreen());
+      NavigationUtils.pushReplacement(context, ReservationSreen());
     });
   }
 

@@ -11,6 +11,7 @@ import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 import '../ondigit.dart';
 
@@ -32,6 +33,7 @@ class ReservationSreenState extends State<ReservationSreen> {
   int day;
   int hour;
 
+  int selected;
   @override
   void initState() {
     // TODO: implement initState
@@ -107,9 +109,12 @@ class ReservationSreenState extends State<ReservationSreen> {
               },
             ),
           ),
+          SizedBox(height: 15,),
           Container(
             color: Color(0xfff5f5f5),
             child: DateTimeField(
+              initialValue: DateTime.now(),
+              format: DateFormat("yyyy-MM-dd"),
               onShowPicker: (context, currentValue) async {
                 final date = await showDatePicker(
                     context: context,
@@ -117,10 +122,17 @@ class ReservationSreenState extends State<ReservationSreen> {
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100));
                 if (date != null) {
-                  print(date.millisecondsSinceEpoch);
+                  _place.dateReservation = date.day.toString() +
+                    '-' +
+                    date.month.toString() +
+                    '-' +
+                    date.year.toString();
+                  print(_place.dateReservation);
                   setState(() {
                     hoursControl(date, DateTime.now());
                   });
+                }else{
+                  print("rien rien");
                 }
 
                 return date;
@@ -135,10 +147,12 @@ class ReservationSreenState extends State<ReservationSreen> {
                     value.month.toString() +
                     '-' +
                     value.year.toString();
-              },
+              }, 
+              
 
             ),
           ),
+          SizedBox(height: 15,),
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
@@ -150,6 +164,7 @@ class ReservationSreenState extends State<ReservationSreen> {
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               isExpanded: true,
               isDense: true,
+              value: selected,
               items: hoursValue
                   .map((e) => DropdownMenuItem(
                         value: e,
@@ -157,7 +172,12 @@ class ReservationSreenState extends State<ReservationSreen> {
                       ))
                   .toList(),
               onChanged: (value) {
-                _place.timeReservation = value;
+                setState(() {
+                  selected = value;
+                  print("dada "+ selected.toString());
+                  _place.timeReservation = selected.toString();
+                  
+                });
               },
             ),
           ),
