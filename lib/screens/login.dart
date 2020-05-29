@@ -6,6 +6,8 @@ import 'package:ondigit/models/Login.dart';
 import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/screens/inscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+
 
 import '../ondigit.dart';
 
@@ -25,7 +27,6 @@ class LoginScreenState extends State<LoginSreen> {
   void initState(){
     // TODO: implement initState
     super.initState();
-
   }
 
 
@@ -142,7 +143,6 @@ class LoginScreenState extends State<LoginSreen> {
 //                  MaterialPageRoute(builder: (context) => InscriptionSreen()),
 //                );
                     }
-
 
                   });
 

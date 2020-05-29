@@ -9,6 +9,8 @@ import 'package:ondigit/models/Place.dart';
 import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/inscription.dart';
+import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 List<Service> _services = new List<Service>();
 
@@ -81,7 +83,7 @@ Future<Place> createReservation(Place place) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
+    body: jsonEncode(<String, Object>{
       'serviceType': place.serviceType,
       'computerNumber': place.computerNumber,
       'dateReservation': place.dateReservation,
@@ -111,8 +113,10 @@ Future<bool> testEmail(String email) async {
   if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    if (response1.data.length > 0) return true;
-    else return false;
+    if (response1.data.length > 0)
+      return true;
+    else
+      return false;
 //    List responseJson = json.decode(response.body);
 //    return responseJson.map((m) => new Service.fromJson(m)).toList();
   } else {
@@ -122,6 +126,8 @@ Future<bool> testEmail(String email) async {
   }
 }
 
+Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+SharedPreferences sharedPreferences;
 bool check = false;
 Inscription userConnected = new Inscription();
 
@@ -133,11 +139,10 @@ Future<Inscription> isValidUser(
   final response1 =
       await dio.get(apiConnexion + '?email=' + email + '&password=' + password);
 
-  if (response.statusCode == 200) {
+  if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     if (response1.data.isNotEmpty) {
-      print('haut');
       userConnected.id = response1.data[0]['id'];
       userConnected.firstName = response1.data[0]['firstName'];
       userConnected.lastName = response1.data[0]['lastName'];
@@ -149,10 +154,12 @@ Future<Inscription> isValidUser(
       //    List responseJson = json.decode(response.body);
       //userConnected = Inscription.fromJson(json.decode(response1.data));
       check = true;
+      sharedPreferences.setString('key', 'value');
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginLoading()));
       return userConnected;
     } else {
+      print(response1.data);
       check = false;
       return null;
     }
@@ -161,8 +168,39 @@ Future<Inscription> isValidUser(
     // then throw an exception.
     throw Exception('Failed to load');
   }
+}
 
-  Inscription getUser(Inscription user) {
-    return user;
+List<Place> places = new List<Place>();
+
+Future<List<Place>> getReservation(String email) async {
+  places.clear();
+  final response = await http
+      .get(apiReservationByEmail + '?email=' + email);
+  var dio = new Dio();
+  final response1 = await dio.get(apiReservationByEmail + '?email=' + email);
+
+  if (response1.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    for (var i = 0; i < response1.data.length; i++) {
+      Place place = new Place(
+        id: response1.data[i]['id'],
+        serviceType: response1.data[i]['serviceType'],
+        computerNumber: response1.data[i]['computerNumber'],
+        dateReservation: response1.data[i]['dateReservation'],
+        timeReservation: response1.data[i]['timeReservation'],
+        userEmail: response1.data[i]['userEmail'],
+        access: response1.data[i]['access'],
+      );
+      _listService.add(response1.data[i]['libelle']);
+      places.add(place);
+    }
+
+    List responseJson = json.decode(response.body);
+    return responseJson.map((m) => new Place.fromJson(m)).toList();
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load');
   }
 }

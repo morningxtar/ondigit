@@ -36,6 +36,7 @@ class ReservationSreenState extends State<ReservationSreen> {
   int selected;
   @override
   void initState() {
+    print(sharedPreferences.get('key'));
     // TODO: implement initState
     super.initState();
     setState(() {
@@ -85,6 +86,11 @@ class ReservationSreenState extends State<ReservationSreen> {
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
+              validator: (dynamic value) {
+                if(value == null)
+                  return 'Champ obligatoire';
+                return null;
+              },
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Type de service',
@@ -109,11 +115,35 @@ class ReservationSreenState extends State<ReservationSreen> {
               },
             ),
           ),
-          SizedBox(height: 15,),
+          SizedBox(height: 2,),
           Container(
             color: Color(0xfff5f5f5),
             child: DateTimeField(
-              initialValue: DateTime.now(),
+              onChanged: (DateTime date){
+                setState(() {
+                  hoursControl(date, DateTime.now());
+                  if (date != null) {
+                    _place.dateReservation = date.day.toString() +
+                        '-' +
+                        date.month.toString() +
+                        '-' +
+                        date.year.toString();
+                    setState(() {
+                      hoursControl(date, DateTime.now());
+                    });
+                  }
+                });
+              },
+              validator: (DateTime value) {
+                if(value == null)
+                  return 'Champ obligatoire';
+                return null;
+              },
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Jour',
+                  prefixIcon: Icon(Icons.date_range),
+                  labelStyle: TextStyle(fontSize: 15)),
               format: DateFormat("yyyy-MM-dd"),
               onShowPicker: (context, currentValue) async {
                 final date = await showDatePicker(
@@ -121,41 +151,20 @@ class ReservationSreenState extends State<ReservationSreen> {
                     firstDate: DateTime.now(),
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100));
-                if (date != null) {
-                  _place.dateReservation = date.day.toString() +
-                    '-' +
-                    date.month.toString() +
-                    '-' +
-                    date.year.toString();
-                  print(_place.dateReservation);
-                  setState(() {
-                    hoursControl(date, DateTime.now());
-                  });
-                }else{
-                  print("rien rien");
-                }
 
                 return date;
               },
-              onSaved: (value){
-                print('object' + value.toString());
-              },
-              onChanged: (value) {
-                print('rr'+value.toString());
-                _place.dateReservation = value.day.toString() +
-                    '-' +
-                    value.month.toString() +
-                    '-' +
-                    value.year.toString();
-              }, 
-              
-
             ),
           ),
-          SizedBox(height: 15,),
+          SizedBox(height: 2,),
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
+              validator: (int value) {
+                if(value == null)
+                  return 'Champ obligatoire';
+                return null;
+              },
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Heure',
@@ -176,14 +185,19 @@ class ReservationSreenState extends State<ReservationSreen> {
                   selected = value;
                   print("dada "+ selected.toString());
                   _place.timeReservation = selected.toString();
-                  
                 });
               },
             ),
           ),
+          SizedBox(height: 2,),
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
+              validator: (dynamic value) {
+                if(value == null)
+                  return 'Champ obligatoire';
+                return null;
+              },
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Liste des machines',
@@ -218,38 +232,49 @@ class ReservationSreenState extends State<ReservationSreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: MaterialButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  _place.userEmail = 's';
-                  _place.access = 1;
-                  print(_place.id);
-                  print(_place.serviceType);
-                  print(_place.dateReservation);
-                  print(_place.timeReservation);
-                  print(_place.computerNumber);
-                  print(_place.userEmail);
-                  print(_place.access);
-                }
-              },
-              //since this is only a UI app
-              child: Text(
-                'RESERVER',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'SFUIDisplay',
-                  fontWeight: FontWeight.bold,
+            padding: EdgeInsets.only(top: 7, bottom: 5),
+            child: Builder(
+              builder: (context) => MaterialButton(
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    _place.userEmail = 's';
+                    _place.access = 1;
+                    print(_place.id);
+                    print(_place.serviceType);
+                    print(_place.dateReservation);
+                    print(_place.timeReservation);
+                    print(_place.computerNumber);
+                    print(_place.userEmail);
+                    print(_place.access);
+                    createReservation(_place);
+                    final snackBar = SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: Text('Résservation effectuée!'),
+
+                      backgroundColor: Colors.blue.shade900,
+                    );
+                    Scaffold.of(context).showSnackBar(snackBar);
+                    _formKey.currentState.reset();
+                  }
+                },
+                //since this is only a UI app
+                child: Text(
+                  'RESERVER',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'SFUIDisplay',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                color: Colors.green,
+                elevation: 0,
+                minWidth: 400,
+                height: 50,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              color: Colors.green,
-              elevation: 0,
-              minWidth: 400,
-              height: 50,
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
           ),
         ],
@@ -279,25 +304,27 @@ class ReservationSreenState extends State<ReservationSreen> {
   void hoursControl(DateTime dateChosen, DateTime currentDate) {
     int timeOver;
     hoursValue.clear();
-    if (dateChosen.day == currentDate.day &&
-        dateChosen.month == currentDate.month &&
-        dateChosen.year == currentDate.year) {
-      if (currentDate.hour <= 16) {
-        timeOver = 16 - this.hour;
-        this.hoursValue = [];
-        for (var i = currentDate.hour; i <= 16; i++) {
-          this.hoursValue.add(i);
+    if (dateChosen != null) {
+      if (dateChosen.day == currentDate.day &&
+          dateChosen.month == currentDate.month &&
+          dateChosen.year == currentDate.year) {
+        if (currentDate.hour <= 16) {
+          timeOver = 16 - currentDate.hour;
+          this.hoursValue = [];
+          for (var i = currentDate.hour; i <= 16; i++) {
+            this.hoursValue.add(i);
+          }
+        } else {
+          this.hoursValue = [];
         }
       } else {
         this.hoursValue = [];
+        for (var i = 8; i <= 16; i++) {
+          this.hoursValue.add(i);
+        }
       }
-    } else {
-      this.hoursValue = [];
-      for (var i = 8; i <= 16; i++) {
-        this.hoursValue.add(i);
-      }
+      print(this.hoursValue);
     }
-    print(this.hoursValue);
   }
 
   @override
