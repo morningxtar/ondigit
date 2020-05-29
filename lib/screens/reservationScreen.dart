@@ -36,7 +36,6 @@ class ReservationSreenState extends State<ReservationSreen> {
   int selected;
   @override
   void initState() {
-    print(sharedPreferences.get('key'));
     // TODO: implement initState
     super.initState();
     setState(() {

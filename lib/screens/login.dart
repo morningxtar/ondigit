@@ -8,7 +8,7 @@ import 'package:ondigit/screens/inscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
 
-
+import '../loginLoad.dart';
 import '../ondigit.dart';
 
 class LoginSreen extends StatefulWidget {
@@ -24,11 +24,10 @@ class LoginScreenState extends State<LoginSreen> {
   Login _login = Login();
 
   @override
-  void initState(){
+  void initState() {
     // TODO: implement initState
     super.initState();
   }
-
 
   Widget loginScreen() {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
@@ -143,9 +142,7 @@ class LoginScreenState extends State<LoginSreen> {
 //                  MaterialPageRoute(builder: (context) => InscriptionSreen()),
 //                );
                     }
-
                   });
-
                 }
               },
               //since this is only a UI app
@@ -201,9 +198,10 @@ class LoginScreenState extends State<LoginSreen> {
     );
   }
 
-
-  bool isAuthenticated(String email, String password){
-    print(check);
+  bool isAuthenticated(String email, String password) {
+    _sharedPreferences.setString('key', 'value');
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginLoading()));
 
     setState(() {
       isValidUser(email, password, context);
