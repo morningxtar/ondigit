@@ -45,6 +45,12 @@ class ReservationSreenState extends State<ReservationSreen> {
       day = DateTime.now().day;
       day = DateTime.now().hour;
     });
+    instancingSharedPref() ;
+  }
+
+  instancingSharedPref() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    print('exemple donnee : ' + _sharedPreferences.getString("credential"));
   }
 
   Widget reservationScreen() {

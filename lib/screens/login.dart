@@ -23,11 +23,18 @@ class LoginScreenState extends State<LoginSreen> {
   SharedPreferences _sharedPreferences;
   Login _login = Login();
 
-  @override
+  @override 
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
+
+  setUsersCredentials  (String val) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setString("credential", val);
+
+  }
+
+
 
   Widget loginScreen() {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
@@ -198,16 +205,19 @@ class LoginScreenState extends State<LoginSreen> {
     );
   }
 
-  bool isAuthenticated(String email, String password) {
-    _sharedPreferences.setString('key', 'value');
+  bool isAuthenticated(String email, String password)  {
+    // _sharedPreferences = await SharedPreferences.getInstance();
+    setUsersCredentials  ("billdoss");
+    // _sharedPreferences.setString('key', 'value');
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginLoading()));
 
-    setState(() {
-      isValidUser(email, password, context);
-    });
+    // setState(() {
+    //   isValidUser(email, password, context);
+    // });
 
-    return check;
+    // return check;
+    return true;
   }
 
   @override
