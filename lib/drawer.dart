@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ondigit/apis/getData.dart';
-import 'package:ondigit/models/Login.dart';
 import 'package:ondigit/screens/checkReservation.dart';
 import 'package:ondigit/screens/historiqueReservation.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/screens/reservationScreen.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Widget drawer(BuildContext context) {
   return SizedBox(
@@ -78,25 +76,11 @@ Widget drawer(BuildContext context) {
                       color: Color.fromRGBO(75, 75, 75, 0.8)),
                 ),
                 onTap: () async {
-                  String cameraScanResult = await scanner.scan();
-                  final snackBar = SnackBar(
-                    behavior: SnackBarBehavior.floating,
-                    content: Text(cameraScanResult),
-                    backgroundColor: Colors.blue.shade900,
-                    action: SnackBarAction(
-                      label: 'retour',
-                      onPressed: () {
-                        // Some code to undo the change.
-                      },
-                    ),
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CheckSreen()),
                   );
-                  Scaffold.of(context).showSnackBar(snackBar);
-//                String cameraScanResult = await scanner.scan();
-//                print('ui' +cameraScanResult);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => CheckSreen(cameraScanResult)),
-                );
                 },
                 leading: Icon(
                   Icons.scanner,
@@ -116,10 +100,7 @@ Widget drawer(BuildContext context) {
                     color: Color.fromRGBO(75, 75, 75, 0.8)),
               ),
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginSreen()),
-                );
+                logout(context);
               },
               leading: Icon(
                 Icons.subdirectory_arrow_left,
@@ -130,5 +111,16 @@ Widget drawer(BuildContext context) {
         ],
       ),
     ),
+  );
+}
+
+SharedPreferences _sharedPreferences;
+
+logout(BuildContext context) async {
+  _sharedPreferences = await SharedPreferences.getInstance();
+  _sharedPreferences.clear();
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginSreen()),
   );
 }

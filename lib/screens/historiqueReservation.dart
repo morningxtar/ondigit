@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:ondigit/screens/inscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../ondigit.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class HistoriqueReservationSreen extends StatefulWidget {
   @override
@@ -24,13 +26,19 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
   SharedPreferences _sharedPreferences;
   Future<List<Place>> futurePlaces;
 
+
+  instancingSharedPref() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      futurePlaces = getReservation(_sharedPreferences.getString('email'));
+    });
+  }
+
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
     super.initState();
-    setState(() {
-      futurePlaces = getReservation('s');
-    });
+    instancingSharedPref();
   }
 
   Widget historiquereservationScreen() {
@@ -55,13 +63,18 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
                         width: MediaQuery.of(context).size.width,
                         child: InkWell(
                           onTap: (){
+
                             (place.access == true) ?  showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
+                                  final key = encrypt.Key.fromUtf8('my 32 length key................');
+                                  final iv = IV.fromLength(16);
+                                  final encrypter = Encrypter(AES(key));
+                                  final encrypted = encrypter.encrypt(place.id.toString(), iv: iv);
                                   return AlertDialog(
                                     backgroundColor: (place.access == true) ? Colors.green : Colors.red,
                                     content: QrImage(
-                                      data: place.id.toString()+','+place.userEmail.toString()+','+place.access.toString(),
+                                      data: place.id.toString() + ',' + place.userEmail.toString() + ',' + place.timeReservation.toString() + ',' + place.dateReservation.toString() + ',' + place.computerNumber.toString() + ',' + place.serviceType.toString() + ',' + place.access.toString(),
                                       version: QrVersions.auto,
                                     ),
                                   );
@@ -86,9 +99,9 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
                 });
           } else if (snapshot.hasError) {
             print("${snapshot.error}");
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         },
       ),
     );

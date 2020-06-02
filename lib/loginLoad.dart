@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/screens/reservationScreen.dart';
 import 'package:ondigit/utils/navigation_utils.dart';
 
@@ -34,6 +33,8 @@ class _SplashPageState extends State<LoginLoading> {
         margin: const EdgeInsets.only(top: 100.0),
         child: new Center(
             child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 new CircularProgressIndicator(strokeWidth: 4.0),
                 new Container(

@@ -12,6 +12,8 @@ import 'package:ondigit/screens/inscription.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+SharedPreferences _sharedPreferences;
+
 List<Service> _services = new List<Service>();
 
 List<String> _listService = new List();
@@ -92,7 +94,7 @@ Future<Place> createReservation(Place place) async {
       'access': place.access,
     }),
   );
-  print(response.body.contains('ConstraintViolationException'));
+  print(apiSaveReservation);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -126,19 +128,18 @@ Future<bool> testEmail(String email) async {
   }
 }
 
-Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-SharedPreferences sharedPreferences;
 bool check = false;
 Inscription userConnected = new Inscription();
 
 Future<Inscription> isValidUser(
     String email, String password, BuildContext context) async {
+
+  _sharedPreferences = await SharedPreferences.getInstance();
   final response = await http
       .get(apiConnexion + '?email=' + email + '&password=' + password);
   var dio = new Dio();
   final response1 =
       await dio.get(apiConnexion + '?email=' + email + '&password=' + password);
-
   if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -153,12 +154,14 @@ Future<Inscription> isValidUser(
       userConnected.userType = response1.data[0]['userType'];
       //    List responseJson = json.decode(response.body);
       //userConnected = Inscription.fromJson(json.decode(response1.data));
+      _sharedPreferences.setString("user", response1.data[0].toString());
+      _sharedPreferences.setString("email", response1.data[0]['email'].toString());
       check = true;
-      sharedPreferences.setString('key', 'value');
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginLoading()));
       return userConnected;
     } else {
+      _sharedPreferences.setString("user", null.toString());
       print(response1.data);
       check = false;
       return null;

@@ -7,3 +7,4 @@ const apiTestEmail = host + 'listUsers/search/byUser';
 const apiCreateUser = host + 'listUsers';
 const apiSaveReservation = host + 'listPlaces';
 const apiReservationByEmail = host + 'listPlaces/search/byUser';
+const apiReservationById = host + 'listPlaces/';

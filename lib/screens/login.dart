@@ -28,10 +28,15 @@ class LoginScreenState extends State<LoginSreen> {
     super.initState();
   }
 
-  setUsersCredentials  (String val) async {
+  setUsersCredentials  (String firstName, String lastName, String phoneNumber, String email, String password, String comments, String userType) async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    _sharedPreferences.setString("credential", val);
-
+    _sharedPreferences.setString(firstName.toString(), firstName.toString());
+    _sharedPreferences.setString(lastName.toString(), lastName.toString());
+    _sharedPreferences.setString(phoneNumber.toString(), phoneNumber.toString());
+    _sharedPreferences.setString(email.toString(), email.toString());
+    _sharedPreferences.setString(password.toString(), password.toString());
+    _sharedPreferences.setString(comments.toString(), comments.toString());
+    _sharedPreferences.setString("userType", userType.toString());
   }
 
 
@@ -65,25 +70,6 @@ class LoginScreenState extends State<LoginSreen> {
         ),
       ],
     );
-  }
-
-  Widget loadingScreen() {
-    return new Container(
-        margin: const EdgeInsets.only(top: 100.0),
-        child: new Center(
-            child: new Column(
-          children: <Widget>[
-            new CircularProgressIndicator(strokeWidth: 4.0),
-            new Container(
-              padding: const EdgeInsets.all(8.0),
-              child: new Text(
-                'Authentification en cours...',
-                style:
-                    new TextStyle(color: Colors.red.shade500, fontSize: 16.0),
-              ),
-            )
-          ],
-        )));
   }
 
   Widget loginForm() {
@@ -138,36 +124,48 @@ class LoginScreenState extends State<LoginSreen> {
           ),
           Padding(
             padding: EdgeInsets.only(top: 20),
-            child: MaterialButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  setState(() {
-                    if (isAuthenticated(_login.email, _login.password)) {
-//                      Navigator.pushReplacement(
-//                  context,
-//                  MaterialPageRoute(builder: (context) => InscriptionSreen()),
-//                );
-                    }
-                  });
-                }
-              },
-              //since this is only a UI app
-              child: Text(
-                'CONNEXION',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'SFUIDisplay',
-                  fontWeight: FontWeight.bold,
+            child: Builder(
+              builder: (context) => MaterialButton(
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    isValidUser(_login.email, _login.password, context).then((value){
+                      if(value == null) {
+                        final snackBar = SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text('Email ou mot de passe incorrect!'),
+
+                          backgroundColor: Colors.blue.shade900,
+                          action: SnackBarAction(
+                            label: 'réssayer',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
+                      }
+                    });
+
+                  }
+                },
+                //since this is only a UI app
+                child: Text(
+                  'CONNEXION',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'SFUIDisplay',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                color: Colors.green,
+                elevation: 0,
+                minWidth: 400,
+                height: 50,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              color: Colors.green,
-              elevation: 0,
-              minWidth: 400,
-              height: 50,
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
           ),
           Padding(
@@ -205,20 +203,7 @@ class LoginScreenState extends State<LoginSreen> {
     );
   }
 
-  bool isAuthenticated(String email, String password)  {
-    // _sharedPreferences = await SharedPreferences.getInstance();
-    setUsersCredentials  ("billdoss");
-    // _sharedPreferences.setString('key', 'value');
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginLoading()));
 
-    // setState(() {
-    //   isValidUser(email, password, context);
-    // });
-
-    // return check;
-    return true;
-  }
 
   @override
   Widget build(BuildContext context) {

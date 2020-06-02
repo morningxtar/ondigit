@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/utils/navigation_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'screens/reservationScreen.dart';
 
@@ -12,12 +13,21 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  SharedPreferences _sharedPreferences;
   @override
-  void initState() {
+  void initState(){
     super.initState();
+
     Timer(Duration(seconds: 3), () {
-      NavigationUtils.pushReplacement(context, LoginSreen());
+      isConnected().then((value) {
+        value ? NavigationUtils.pushReplacement(context, ReservationSreen()) : NavigationUtils.pushReplacement(context, LoginSreen());
+      });
     });
+  }
+
+  Future<bool> isConnected() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return _sharedPreferences.containsKey('user');
   }
 
   @override

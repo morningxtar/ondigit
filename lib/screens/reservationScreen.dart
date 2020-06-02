@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,7 @@ class ReservationSreenState extends State<ReservationSreen> {
 
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    print('exemple donnee : ' + _sharedPreferences.getString("credential"));
+    print('exemple donnee : ' + _sharedPreferences.getString("user"));
   }
 
   Widget reservationScreen() {
@@ -188,7 +190,6 @@ class ReservationSreenState extends State<ReservationSreen> {
               onChanged: (value) {
                 setState(() {
                   selected = value;
-                  print("dada "+ selected.toString());
                   _place.timeReservation = selected.toString();
                 });
               },
@@ -240,10 +241,11 @@ class ReservationSreenState extends State<ReservationSreen> {
             padding: EdgeInsets.only(top: 7, bottom: 5),
             child: Builder(
               builder: (context) => MaterialButton(
-                onPressed: () {
+                onPressed: () async{
+                  _sharedPreferences = await SharedPreferences.getInstance();
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
-                    _place.userEmail = 's';
+                    _place.userEmail = _sharedPreferences.getString('email');
                     _place.access = 1;
                     print(_place.id);
                     print(_place.serviceType);
@@ -252,14 +254,16 @@ class ReservationSreenState extends State<ReservationSreen> {
                     print(_place.computerNumber);
                     print(_place.userEmail);
                     print(_place.access);
-                    createReservation(_place);
-                    final snackBar = SnackBar(
-                      behavior: SnackBarBehavior.floating,
-                      content: Text('Résservation effectuée!'),
+                    createReservation(_place).then((value){
+                      print(value);
+                      final snackBar = SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        content: Text('Résservation effectuée!'),
 
-                      backgroundColor: Colors.blue.shade900,
-                    );
-                    Scaffold.of(context).showSnackBar(snackBar);
+                        backgroundColor: Colors.blue.shade900,
+                      );
+                      Scaffold.of(context).showSnackBar(snackBar);
+                    });
                     _formKey.currentState.reset();
                   }
                 },
