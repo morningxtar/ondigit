@@ -37,12 +37,10 @@ class CheckSreenState extends State<CheckSreen> {
 //    final iv = IV.fromLength(16);
 //    final encrypter = Encrypter(AES(key));
 //    final decrypted = encrypter.decrypt(Encrypted.fromBase64(cameraScanResult), iv: iv);
-    setState(() {
       color = Colors.white;
       String cameraScanResult = await scanner.scan();
       color = Colors.green;
       tab = cameraScanResult.split(',');
-    });
   return tab[6] == true;
   }
 
