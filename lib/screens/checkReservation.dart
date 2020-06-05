@@ -25,20 +25,21 @@ class CheckSreenState extends State<CheckSreen> {
     // TODO: implement initState
     super.initState();
     setState(() {
-      color = Colors.white;
+
       check();
     });
 
   }
 
   Future<bool> check() async {
-    String cameraScanResult = await scanner.scan();
+
 //    final key = encrypt.Key.fromUtf8('my 32 length key................');
 //    final iv = IV.fromLength(16);
 //    final encrypter = Encrypter(AES(key));
 //    final decrypted = encrypter.decrypt(Encrypted.fromBase64(cameraScanResult), iv: iv);
-    color = Colors.white;
     setState(() {
+      color = Colors.white;
+      String cameraScanResult = await scanner.scan();
       color = Colors.green;
       tab = cameraScanResult.split(',');
     });
