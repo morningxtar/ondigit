@@ -273,7 +273,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                           {
                             final snackBar = SnackBar(
                               behavior: SnackBarBehavior.floating,
-                              content: Text('La place est déjà réservé par une autre personne!'),
+                              content: Text('La place est déjà réservée par une autre personne!'),
 
                               backgroundColor: Colors.red.shade900,
                             );
