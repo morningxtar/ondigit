@@ -86,12 +86,12 @@ class LoginScreenState extends State<LoginSreen> {
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Email ou numéro',
                     prefixIcon: Icon(Icons.person_outline),
                     labelStyle: TextStyle(fontSize: 15)),
                 validator: (String value) {
                   if (value.isEmpty) {
-                    return 'Entrer votre email';
+                    return 'Entrer votre email ou votre numéro';
                   }
                   return null;
                 },
@@ -137,7 +137,7 @@ class LoginScreenState extends State<LoginSreen> {
 
                           backgroundColor: Colors.blue.shade900,
                           action: SnackBarAction(
-                            label: 'réssayer',
+                            label: 'réessayer',
                             onPressed: () {
                               // Some code to undo the change.
                             },

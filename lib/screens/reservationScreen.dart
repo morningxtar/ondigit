@@ -1,21 +1,13 @@
-import 'dart:convert';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ondigit/apis/getData.dart';
 import 'package:ondigit/appbar.dart';
 import 'package:ondigit/drawer.dart';
 import 'package:ondigit/models/Place.dart';
-import 'package:ondigit/models/inscription.dart';
-import 'package:ondigit/models/service.dart';
-import 'package:ondigit/screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-
-import '../ondigit.dart';
 
 class ReservationSreen extends StatefulWidget {
   @override
@@ -30,47 +22,84 @@ class ReservationSreenState extends State<ReservationSreen> {
   Place _place = Place();
   Future<List<String>> services;
   List<int> hoursValue = [];
+  List<String> postes = [];
+  FocusNode _focusNode;
+
   int year;
   int month;
   int day;
   int hour;
 
   int selected;
+  String userType;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _focusNode = FocusNode();
     setState(() {
-      print(DateTime.now().millisecondsSinceEpoch);
-      year = DateTime.now().year;
-      month = DateTime.now().month;
-      day = DateTime.now().day;
-      day = DateTime.now().hour;
+      print(DateTime
+          .now()
+          .millisecondsSinceEpoch);
+      year = DateTime
+          .now()
+          .year;
+      month = DateTime
+          .now()
+          .month;
+      day = DateTime
+          .now()
+          .day;
+      day = DateTime
+          .now()
+          .hour;
     });
-    instancingSharedPref() ;
+    for (var i = 1; i <= 21; i++) {
+      postes.add('poste ' + i.toString());
+    }
+    instancingSharedPref();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    _focusNode.dispose();
+
+    super.dispose();
   }
 
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
+    userType = _sharedPreferences.getString('userType');
     print('exemple donnee : ' + _sharedPreferences.getString("user"));
   }
 
   Widget reservationScreen() {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+    ScreenUtil.instance = ScreenUtil.getInstance()
+      ..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    List<String> doubleList =
+    List<String>.generate(393, (int index) => '${index * .25 + 1}');
+    List<DropdownMenuItem> menuItemList = doubleList
+        .map((val) => DropdownMenuItem(value: val, child: Text(val)))
+        .toList();
     return Stack(
       children: <Widget>[
         Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-            image: AssetImage('assets/images/logo.png'),
-            fit: BoxFit.contain,
-            alignment: Alignment.topCenter,
-          )),
+                image: AssetImage('assets/images/logo.png'),
+                fit: BoxFit.contain,
+                alignment: Alignment.topCenter,
+              )),
         ),
         Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
           margin: EdgeInsets.only(top: 200),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -86,6 +115,8 @@ class ReservationSreenState extends State<ReservationSreen> {
   }
 
   Widget reservationForm() {
+    List<DropdownMenuItem> menuPoste = postes.map((val) =>
+        DropdownMenuItem(value: val, child: Text(val))).toList();
     return Form(
       key: _formKey,
       child: ListView(
@@ -94,7 +125,7 @@ class ReservationSreenState extends State<ReservationSreen> {
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
               validator: (dynamic value) {
-                if(value == null)
+                if (value == null)
                   return 'Champ obligatoire';
                 return null;
               },
@@ -126,7 +157,7 @@ class ReservationSreenState extends State<ReservationSreen> {
           Container(
             color: Color(0xfff5f5f5),
             child: DateTimeField(
-              onChanged: (DateTime date){
+              onChanged: (DateTime date) {
                 setState(() {
                   hoursControl(date, DateTime.now());
                   if (date != null) {
@@ -142,7 +173,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                 });
               },
               validator: (DateTime value) {
-                if(value == null)
+                if (value == null)
                   return 'Champ obligatoire';
                 return null;
               },
@@ -168,7 +199,7 @@ class ReservationSreenState extends State<ReservationSreen> {
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
               validator: (int value) {
-                if(value == null)
+                if (value == null)
                   return 'Champ obligatoire';
                 return null;
               },
@@ -182,10 +213,11 @@ class ReservationSreenState extends State<ReservationSreen> {
               isDense: true,
               value: selected,
               items: hoursValue
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.toString()),
-                      ))
+                  .map((e) =>
+                  DropdownMenuItem(
+                    value: e,
+                    child: Text(e.toString()),
+                  ))
                   .toList(),
               onChanged: (value) {
                 setState(() {
@@ -200,7 +232,7 @@ class ReservationSreenState extends State<ReservationSreen> {
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
               validator: (dynamic value) {
-                if(value == null)
+                if (value == null)
                   return 'Champ obligatoire';
                 return null;
               },
@@ -212,26 +244,7 @@ class ReservationSreenState extends State<ReservationSreen> {
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               isExpanded: true,
               isDense: true,
-              items: <DropdownMenuItem<dynamic>>[
-                DropdownMenuItem(
-                  value: "poste 1",
-                  child: Text(
-                    "Poste 1",
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: "poste 2",
-                  child: Text(
-                    "Poste 2",
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: "poste 3",
-                  child: Text(
-                    "Poste 3",
-                  ),
-                ),
-              ],
+              items: menuPoste,
               onChanged: (value) {
                 _place.computerNumber = value;
               },
@@ -240,50 +253,68 @@ class ReservationSreenState extends State<ReservationSreen> {
           Padding(
             padding: EdgeInsets.only(top: 7, bottom: 5),
             child: Builder(
-              builder: (context) => MaterialButton(
-                onPressed: () async{
-                  _sharedPreferences = await SharedPreferences.getInstance();
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    _place.userEmail = _sharedPreferences.getString('email');
-                    _place.access = 1;
-                    print(_place.id);
-                    print(_place.serviceType);
-                    print(_place.dateReservation);
-                    print(_place.timeReservation);
-                    print(_place.computerNumber);
-                    print(_place.userEmail);
-                    print(_place.access);
-                    createReservation(_place).then((value){
-                      print(value);
-                      final snackBar = SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        content: Text('Résservation effectuée!'),
+              builder: (context) =>
+                  MaterialButton(
+                    onPressed: () async {
+                      _sharedPreferences =
+                      await SharedPreferences.getInstance();
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        print(_place.id);
+                        print(_place.serviceType);
+                        print(_place.dateReservation);
+                        print(_place.timeReservation);
+                        print(_place.computerNumber);
+                        print(_place.userEmail);
+                        print(_place.access);
+                        checkExistReservation(_place.dateReservation, _place.timeReservation, _place.computerNumber).then((value) {
+//                          print('tr '+value.toString());
+                          if(value)
+                          {
+                            final snackBar = SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              content: Text('La place est déjà réservé par une autre personne!'),
 
-                        backgroundColor: Colors.blue.shade900,
-                      );
-                      Scaffold.of(context).showSnackBar(snackBar);
-                    });
-                    _formKey.currentState.reset();
-                  }
-                },
-                //since this is only a UI app
-                child: Text(
-                  'RESERVER',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'SFUIDisplay',
-                    fontWeight: FontWeight.bold,
+                              backgroundColor: Colors.red.shade900,
+                            );
+                            Scaffold.of(context).showSnackBar(snackBar);
+                          }
+                          else {
+                            _place.userEmail =
+                                _sharedPreferences.getString('email');
+                            _place.access = 1;
+                        createReservation(_place).then((value) {
+                          print(value);
+                          final snackBar = SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            content: Text('Réservation effectuée!'),
+
+                            backgroundColor: Colors.blue.shade900,
+                          );
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        });
+                            _formKey.currentState.reset();
+                          }
+                        });
+                      }
+                    },
+                    //since this is only a UI app
+                    child: Text(
+                      'RESERVER',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'SFUIDisplay',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    color: Colors.green,
+                    elevation: 0,
+                    minWidth: 400,
+                    height: 50,
+                    textColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
-                ),
-                color: Colors.green,
-                elevation: 0,
-                minWidth: 400,
-                height: 50,
-                textColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
             ),
           ),
         ],
@@ -296,18 +327,18 @@ class ReservationSreenState extends State<ReservationSreen> {
         margin: const EdgeInsets.only(top: 100.0),
         child: new Center(
             child: new Column(
-          children: <Widget>[
-            new CircularProgressIndicator(strokeWidth: 4.0),
-            new Container(
-              padding: const EdgeInsets.all(8.0),
-              child: new Text(
-                'Authentification en cours...',
-                style:
+              children: <Widget>[
+                new CircularProgressIndicator(strokeWidth: 4.0),
+                new Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: new Text(
+                    'Authentification en cours...',
+                    style:
                     new TextStyle(color: Colors.red.shade500, fontSize: 16.0),
-              ),
-            )
-          ],
-        )));
+                  ),
+                )
+              ],
+            )));
   }
 
   void hoursControl(DateTime dateChosen, DateTime currentDate) {
@@ -340,7 +371,7 @@ class ReservationSreenState extends State<ReservationSreen> {
   Widget build(BuildContext context) {
     return new Scaffold(
         key: _scaffoldKey,
-        drawer: drawer(context),
+        drawer: drawer(context, userType),
         appBar: appbar('Réservation'),
         body: reservationScreen());
   }

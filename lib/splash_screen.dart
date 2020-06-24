@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ondigit/screens/checkReservation.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/utils/navigation_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,13 +15,19 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   SharedPreferences _sharedPreferences;
-  @override
-  void initState(){
-    super.initState();
+  String userType;
 
+  @override
+  void initState() {
+    super.initState();
+    instancingSharedPref();
     Timer(Duration(seconds: 3), () {
       isConnected().then((value) {
-        value ? NavigationUtils.pushReplacement(context, ReservationSreen()) : NavigationUtils.pushReplacement(context, LoginSreen());
+        if (value) {
+          userType != 'virgile' ? NavigationUtils.pushReplacement(context, ReservationSreen())
+              : NavigationUtils.pushReplacement(context, CheckSreen());
+        }
+            else NavigationUtils.pushReplacement(context, LoginSreen());
       });
     });
   }
@@ -28,6 +35,11 @@ class _SplashPageState extends State<SplashPage> {
   Future<bool> isConnected() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     return _sharedPreferences.containsKey('user');
+  }
+
+  instancingSharedPref() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    userType = _sharedPreferences.getString('userType');
   }
 
   @override

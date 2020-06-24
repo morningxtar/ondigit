@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ondigit/screens/checkReservation.dart';
 import 'package:ondigit/screens/reservationScreen.dart';
 import 'package:ondigit/utils/navigation_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginLoading extends StatefulWidget {
   @override
@@ -10,11 +12,21 @@ class LoginLoading extends StatefulWidget {
 }
 
 class _SplashPageState extends State<LoginLoading> {
+
+  SharedPreferences _sharedPreferences;
+  String userType;
   @override
   void initState() {
     super.initState();
+    instancingSharedPref();
+  }
+
+  instancingSharedPref() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    userType = _sharedPreferences.getString('userType');
     Timer(Duration(seconds: 2), () {
-      NavigationUtils.pushReplacement(context, ReservationSreen());
+      (userType != 'virgile') ?
+      NavigationUtils.pushReplacement(context, ReservationSreen()) : NavigationUtils.pushReplacement(context, CheckSreen());
     });
   }
 

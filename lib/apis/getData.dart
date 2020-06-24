@@ -136,10 +136,11 @@ Future<Inscription> isValidUser(
 
   _sharedPreferences = await SharedPreferences.getInstance();
   final response = await http
-      .get(apiConnexion + '?email=' + email + '&password=' + password);
+      .get(apiConnexion + '?email=' + email + '&password=' + password + '?number=' + email + '&password2=' + password);
   var dio = new Dio();
   final response1 =
-      await dio.get(apiConnexion + '?email=' + email + '&password=' + password);
+      await dio.get(apiConnexion + '?email=' + email + '&password=' + password + '&number=' + email + '&password2=' + password);
+  print('ds' + response1.data.toString());
   if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -156,6 +157,7 @@ Future<Inscription> isValidUser(
       //userConnected = Inscription.fromJson(json.decode(response1.data));
       _sharedPreferences.setString("user", response1.data[0].toString());
       _sharedPreferences.setString("email", response1.data[0]['email'].toString());
+      _sharedPreferences.setString("userType", response1.data[0]['userType'].toString());
       check = true;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginLoading()));
@@ -171,6 +173,13 @@ Future<Inscription> isValidUser(
     // then throw an exception.
     throw Exception('Failed to load');
   }
+}
+
+Future<bool> checkExistReservation (String date, String time, String machine) async{
+  final response = await http
+      .get(apiReservationByCoord + '?date=' + date + '&time=' + time + '&machine=' + machine);
+  //print(response.body);
+  return response.body.length > 2;
 }
 
 List<Place> places = new List<Place>();

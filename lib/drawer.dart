@@ -5,7 +5,7 @@ import 'package:ondigit/screens/login.dart';
 import 'package:ondigit/screens/reservationScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Widget drawer(BuildContext context) {
+Widget drawer(BuildContext context, String userType) {
   return SizedBox(
     width: 300,
     child: Drawer(
@@ -20,7 +20,7 @@ Widget drawer(BuildContext context) {
             child: null,
           ),
           Visibility(
-            visible: true,
+            visible: userType != 'virgile',
             child: new ListTile(
               title: Text(
                 "Réserver place",
@@ -42,7 +42,7 @@ Widget drawer(BuildContext context) {
             ),
           ),
           Visibility(
-            visible: true,
+            visible: userType != 'virgile',
             child: new ListTile(
               title: new Text(
                 'Historique des réservations',
@@ -65,7 +65,7 @@ Widget drawer(BuildContext context) {
             ),
           ),
           Visibility(
-            visible: true,
+            visible: userType == 'virgile',
             child: Builder(
               builder: (context) => ListTile(
                 title: new Text(

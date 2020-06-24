@@ -40,6 +40,7 @@ dependencies:
   hive: ^1.4.1+1
   encrypt: ^4.0.2
   splashscreen: ^1.2.0
+  email_validator: ^1.0.0
 
 dev_dependencies:
   flutter_test:

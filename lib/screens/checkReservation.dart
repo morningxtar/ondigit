@@ -20,15 +20,20 @@ class CheckSreenState extends State<CheckSreen> {
   String cameraScanResult;
   Color color;
   List tab = [];
+  String userType;
   @override
   void initState(){
     // TODO: implement initState
+    instancingSharedPref();
     super.initState();
+
+  }
+
+  instancingSharedPref() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-
-      check();
+      userType = _sharedPreferences.getString('userType');
     });
-
   }
 
   Future<bool> check() async {
@@ -100,7 +105,7 @@ class CheckSreenState extends State<CheckSreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(key: _scaffoldKey,
-        drawer: drawer(context),
+        drawer: drawer(context, userType),
         appBar: appbar('Vérifier réservation'),
         body: checkScreen());
   }

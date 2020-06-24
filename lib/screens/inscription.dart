@@ -1,11 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ondigit/apis/getData.dart';
 import 'package:ondigit/models/inscription.dart';
 import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:email_validator/email_validator.dart';
 
 import '../ondigit.dart';
 
@@ -112,16 +114,23 @@ class InscriptioncreenState extends State<InscriptionSreen> {
           ),
           Container(
             color: Color(0xfff5f5f5),
-            child: TextFormField(
+            child: TextFormField(maxLength: 8,autovalidate: true,
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Téléphone',
                   prefixIcon: Icon(Icons.smartphone),
                   labelStyle: TextStyle(fontSize: 15)),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
               validator: (String value) {
                 if (value.isEmpty) {
                   return 'Champ obligatoire';
+                }
+                else if(value.length < 8){
+                  return 'Le numéro doit être composer de 8 chiffres';
                 }
                 return null;
               },
@@ -132,7 +141,7 @@ class InscriptioncreenState extends State<InscriptionSreen> {
           ),
           Container(
             color: Color(0xfff5f5f5),
-            child: TextFormField(
+            child: TextFormField(autovalidate: true,
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -142,6 +151,9 @@ class InscriptioncreenState extends State<InscriptionSreen> {
               validator: (String value) {
                 if (value.isEmpty) {
                   return 'Champ obligatoire';
+                }
+                else if (!EmailValidator.validate(value)){
+                  return 'Email non valide';
                 }
                 return null;
               },
@@ -175,27 +187,36 @@ class InscriptioncreenState extends State<InscriptionSreen> {
               },
             ),
           ),
-          Container(
-            color: Color(0xfff5f5f5),
-            child: TextFormField(
-              obscureText: true,
-              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Répétez le mot de passe',
-                  prefixIcon: Icon(Icons.lock_outline),
-                  labelStyle: TextStyle(fontSize: 15)),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Champ obligatoire';
-                }
-                return null;
-              },
+          Visibility(
+            visible: false,
+            child: Container(
+              color: Color(0xfff5f5f5),
+              child: TextFormField(
+                obscureText: true,
+                style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Répétez le mot de passe',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    labelStyle: TextStyle(fontSize: 15)),
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Champ obligatoire';
+                  }
+                  return null;
+                },
+              ),
             ),
           ),
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
+              validator: (value) {
+                if (value == null) {
+                  return 'Champ obligatoire';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Type d\'inscription',
@@ -208,6 +229,12 @@ class InscriptioncreenState extends State<InscriptionSreen> {
                   value: "inscription normale",
                   child: Text(
                     "inscription normale",
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: "membership",
+                  child: Text(
+                    "membership",
                   ),
                 ),
               ],

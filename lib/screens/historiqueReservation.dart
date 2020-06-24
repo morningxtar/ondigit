@@ -25,10 +25,11 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences _sharedPreferences;
   Future<List<Place>> futurePlaces;
-
+  String userType;
 
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
+    userType = _sharedPreferences.getString('userType');
     setState(() {
       futurePlaces = getReservation(_sharedPreferences.getString('email'));
     });
@@ -111,7 +112,7 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
   Widget build(BuildContext context) {
     return new Scaffold(
         key: _scaffoldKey,
-        drawer: drawer(context),
+        drawer: drawer(context, userType),
         appBar: appbar('Historique des réservations'),
         body: historiquereservationScreen());
   }
