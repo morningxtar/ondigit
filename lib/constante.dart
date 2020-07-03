@@ -1,4 +1,4 @@
-const host = 'http://192.168.8.154:8080/';
+const host = 'http://192.168.8.154:888/';
 
 const apiService = host + 'listServices';
 const apiMachines = host + 'listMachines';

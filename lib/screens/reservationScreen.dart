@@ -1,4 +1,7 @@
 
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,8 +9,10 @@ import 'package:ondigit/apis/getData.dart';
 import 'package:ondigit/appbar.dart';
 import 'package:ondigit/drawer.dart';
 import 'package:ondigit/models/Place.dart';
+import 'package:ondigit/models/machine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_vpn/flutter_vpn.dart';
 
 class ReservationSreen extends StatefulWidget {
   @override
@@ -20,9 +25,11 @@ class ReservationSreenState extends State<ReservationSreen> {
   SharedPreferences _sharedPreferences;
   var _formKey = GlobalKey<FormState>();
   Place _place = Place();
-  Future<List<String>> services;
+  List<String> services = [];
   List<int> hoursValue = [];
-  List<String> postes = [];
+  List<int> hours = [];
+  List<String> postes = List();
+  Future<List<Machine>> postesFut;
   FocusNode _focusNode;
 
   int year;
@@ -31,11 +38,17 @@ class ReservationSreenState extends State<ReservationSreen> {
   int hour;
 
   int selected;
+  int selected2;
   String userType;
+
+  var state = FlutterVpnState.disconnected;
+  var charonState = CharonErrorState.NO_ERROR;
 
   @override
   void initState() {
     // TODO: implement initState
+    fetchMachine();
+    fetchService();
     super.initState();
     _focusNode = FocusNode();
     setState(() {
@@ -55,9 +68,7 @@ class ReservationSreenState extends State<ReservationSreen> {
           .now()
           .hour;
     });
-    for (var i = 1; i <= 21; i++) {
-      postes.add('poste ' + i.toString());
-    }
+
     instancingSharedPref();
   }
 
@@ -72,7 +83,13 @@ class ReservationSreenState extends State<ReservationSreen> {
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     userType = _sharedPreferences.getString('userType');
-    print('exemple donnee : ' + _sharedPreferences.getString("user"));
+    setState(() {
+      postes = _sharedPreferences.getString("machines").split(',');
+      postes.removeLast();
+      services = _sharedPreferences.getString("services").split(',');
+      services.removeLast();
+    });
+
   }
 
   Widget reservationScreen() {
@@ -117,6 +134,8 @@ class ReservationSreenState extends State<ReservationSreen> {
   Widget reservationForm() {
     List<DropdownMenuItem> menuPoste = postes.map((val) =>
         DropdownMenuItem(value: val, child: Text(val))).toList();
+    List<DropdownMenuItem> menuService = services.map((val) =>
+        DropdownMenuItem(value: val, child: Text(val))).toList();
     return Form(
       key: _formKey,
       child: ListView(
@@ -137,14 +156,7 @@ class ReservationSreenState extends State<ReservationSreen> {
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               isExpanded: true,
               isDense: true,
-              items: <DropdownMenuItem<dynamic>>[
-                DropdownMenuItem(
-                  value: "navigation internet",
-                  child: Text(
-                    "Navigation internet",
-                  ),
-                ),
-              ],
+              items: menuService,
               onChanged: (value) {
                 _place.serviceType = value;
               },
@@ -197,34 +209,68 @@ class ReservationSreenState extends State<ReservationSreen> {
           SizedBox(height: 2,),
           Container(
             color: Color(0xfff5f5f5),
-            child: DropdownButtonFormField(
-              validator: (int value) {
-                if (value == null)
-                  return 'Champ obligatoire';
-                return null;
-              },
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Heure',
-                  prefixIcon: Icon(Icons.access_time),
-                  labelStyle: TextStyle(fontSize: 15)),
-              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-              isExpanded: true,
-              isDense: true,
-              value: selected,
-              items: hoursValue
-                  .map((e) =>
-                  DropdownMenuItem(
-                    value: e,
-                    child: Text(e.toString()),
-                  ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selected = value;
-                  _place.timeReservation = selected.toString();
-                });
-              },
+            child: Column(
+              children: <Widget>[
+                DropdownButtonFormField(
+                  validator: (int value) {
+                    if (value == null)
+                      return 'Champ obligatoire';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Heure début',
+                      prefixIcon: Icon(Icons.access_time),
+                      labelStyle: TextStyle(fontSize: 15)),
+                  style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                  isExpanded: true,
+                  isDense: true,
+                  value: selected,
+                  items: hoursValue
+                      .map((e) =>
+                      DropdownMenuItem(
+                        value: e,
+                        child: Text(e.toString()),
+                      ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      numberHours(value);
+                      selected = value;
+                      _place.timeReservation = selected.toString();
+                    });
+                  },
+                ),
+                DropdownButtonFormField(
+                  validator: (int value) {
+                    if (value == null)
+                      return 'Champ obligatoire';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Nombre d\'heure',
+                      prefixIcon: Icon(Icons.access_alarm),
+                      labelStyle: TextStyle(fontSize: 15)),
+                  style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                  isExpanded: true,
+                  isDense: true,
+                  value: selected2,
+                  items: hours
+                      .map((e) =>
+                      DropdownMenuItem(
+                        value: e,
+                        child: Text(e.toString()),
+                      ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selected2 = value;
+                      _place.timeReservation = _place.timeReservation + ',' + (int.parse(_place.timeReservation) + int.parse(selected2.toString())).toString();
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           SizedBox(height: 2,),
@@ -365,6 +411,26 @@ class ReservationSreenState extends State<ReservationSreen> {
       }
       print(this.hoursValue);
     }
+  }
+
+  void numberHours(hourDeb){
+    hours.clear();
+    print(hourDeb);
+    if(hourDeb < hoursValue.length){
+      hours.add(1);
+      hours.add(2);
+    }
+    else{
+      if(17 - hourDeb > 1){
+        hours.add(1);
+        hours.add(2);
+      }
+      else {
+        hours.add(1);
+      }
+    }
+
+    print(hours);
   }
 
   @override

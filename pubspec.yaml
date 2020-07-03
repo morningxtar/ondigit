@@ -41,6 +41,7 @@ dependencies:
   encrypt: ^4.0.2
   splashscreen: ^1.2.0
   email_validator: ^1.0.0
+  flutter_vpn: ^0.8.0
 
 dev_dependencies:
   flutter_test:

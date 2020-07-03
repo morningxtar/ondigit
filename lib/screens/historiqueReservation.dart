@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../ondigit.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:crypto/crypto.dart';
 
 class HistoriqueReservationSreen extends StatefulWidget {
   @override
@@ -40,6 +43,9 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
     // TODO: implement initState
     super.initState();
     instancingSharedPref();
+
+    print(cryptString('1'));
+    print(decryptString('OuOM4y/Ol/V0PMdHq3WFvw=='));
   }
 
   Widget historiquereservationScreen() {
@@ -68,14 +74,10 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
                             (place.access == true) ?  showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  final key = encrypt.Key.fromUtf8('my 32 length key................');
-                                  final iv = IV.fromLength(16);
-                                  final encrypter = Encrypter(AES(key));
-                                  final encrypted = encrypter.encrypt(place.id.toString(), iv: iv);
                                   return AlertDialog(
                                     backgroundColor: (place.access == true) ? Colors.green : Colors.red,
                                     content: QrImage(
-                                      data: place.id.toString() + ',' + place.userEmail.toString() + ',' + place.timeReservation.toString() + ',' + place.dateReservation.toString() + ',' + place.computerNumber.toString() + ',' + place.serviceType.toString() + ',' + place.access.toString(),
+                                      data: cryptString(place.id.toString() + ',' + place.userEmail.toString() + ',' + place.timeReservation.toString() + ',' + place.dateReservation.toString() + ',' + place.computerNumber.toString() + ',' + place.serviceType.toString() + ',' + place.access.toString() + ',' + place.presence.toString()),
                                       version: QrVersions.auto,
                                     ),
                                   );
@@ -89,7 +91,7 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
                                 Text('Service : '+ place.serviceType),
                                 Text('Machine : '+ place.computerNumber),
                                 Text('Date réservation : '+ place.dateReservation),
-                                Text('Heure réservation : '+ place.timeReservation),
+                                Text('Heure réservation : De '+ place.timeReservation.split(',')[0] + 'h à ' + place.timeReservation.split(',')[1] + 'h'),
                               ],
                             ),
                           ),
@@ -106,6 +108,27 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
         },
       ),
     );
+  }
+
+  cryptString(string){
+    final plainText = string;
+    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final iv = IV.fromLength(16);
+
+    final encrypter = Encrypter(AES(key));
+
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+
+    return encrypted.base64;
+  }
+
+  decryptString(encrypted){
+    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final iv = IV.fromLength(16);
+
+    final encrypter = Encrypter(AES(key));
+    final decrypted = encrypter.decrypt(Encrypted.from64(encrypted), iv: iv);
+    return decrypted;
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:ondigit/constante.dart';
 import 'package:ondigit/loginLoad.dart';
 import 'package:ondigit/models/Place.dart';
 import 'package:ondigit/models/inscription.dart';
+import 'package:ondigit/models/machine.dart';
 import 'package:ondigit/models/service.dart';
 import 'package:ondigit/screens/inscription.dart';
 import 'package:hive/hive.dart';
@@ -15,14 +16,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 SharedPreferences _sharedPreferences;
 
 List<Service> _services = new List<Service>();
+List<Machine> _machine = new List<Machine>();
 
 List<String> _listService = new List();
+List<String> _listMachine = new List();
+String _listMachines = '';
+String _listServices = '';
 
 Future<List<String>> fetchService() async {
   final response = await http.get(apiService);
   var dio = new Dio();
   final response1 = await dio.get(apiService);
-
+  _sharedPreferences = await SharedPreferences.getInstance();
+  String _listServices = '';
   if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -33,8 +39,40 @@ Future<List<String>> fetchService() async {
       );
       _listService.add(response1.data[i]['libelle']);
       _services.add(_service);
+      _listServices = _listServices + response1.data[i]['libelle'] + ',';
     }
+    _sharedPreferences.setString('services', _listServices);
     return _listService;
+//    List responseJson = json.decode(response.body);
+//    return responseJson.map((m) => new Service.fromJson(m)).toList();
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load');
+  }
+}
+
+Future<List<Machine>> fetchMachine() async {
+  final response = await http.get(apiMachines);
+  var dio = new Dio();
+  final response1 = await dio.get(apiMachines);
+  _sharedPreferences = await SharedPreferences.getInstance();
+  if (response1.statusCode == 200) {
+    print(response1.data);
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    for (var i = 0; i < response1.data.length; i++) {
+      Machine machine = new Machine(
+        id: response1.data[i]['id'],
+        libelle: response1.data[i]['libelle'],
+      );
+      //_listMachine.add(response1.data[i]['libelle']);
+      _machine.add(machine);
+      _listMachines = _listMachines + response1.data[i]['libelle'] + ',';
+    }
+//    print(_machine);
+    _sharedPreferences.setString('machines', _listMachines);
+    return _machine;
 //    List responseJson = json.decode(response.body);
 //    return responseJson.map((m) => new Service.fromJson(m)).toList();
   } else {
@@ -95,6 +133,34 @@ Future<Place> createReservation(Place place) async {
     }),
   );
   print(apiSaveReservation);
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Place.fromJson(json.decode(response.body));
+//    List responseJson = json.decode(response.body);
+//    return responseJson.map((m) => new Service.fromJson(m)).toList();
+  } else {
+    print(Exception);
+    throw Exception('Failed to load');
+  }
+}
+
+Future<Place> changeAccess(Place place) async {
+  final http.Response response = await http.put(
+    apiSaveReservation + '/' + place.id.toString(),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, Object>{
+      'serviceType': place.serviceType,
+      'computerNumber': place.computerNumber,
+      'dateReservation': place.dateReservation,
+      'timeReservation': place.timeReservation,
+      'userEmail': place.userEmail,
+      'access': place.access,
+      'presence': place.presence,
+    }),
+  );
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.

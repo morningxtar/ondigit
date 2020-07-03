@@ -7,6 +7,7 @@ class Place {
   String timeReservation;
   String userEmail;
   var access;
+  var presence;
 
   Place({
     this.id,
@@ -16,6 +17,7 @@ class Place {
     this.timeReservation,
     this.userEmail,
     this.access,
+    this.presence,
   });
 
   factory Place.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Place {
       timeReservation: json['timeReservation'],
       userEmail: json['userEmail'],
       access: json['access'],
+      presence: json['presence'],
     );
   }
 }
