@@ -1,7 +1,4 @@
 
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +9,6 @@ import 'package:ondigit/models/Place.dart';
 import 'package:ondigit/models/machine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_vpn/flutter_vpn.dart';
 
 class ReservationSreen extends StatefulWidget {
   @override
@@ -40,9 +36,6 @@ class ReservationSreenState extends State<ReservationSreen> {
   int selected;
   int selected2;
   String userType;
-
-  var state = FlutterVpnState.disconnected;
-  var charonState = CharonErrorState.NO_ERROR;
 
   @override
   void initState() {
