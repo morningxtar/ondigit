@@ -22,6 +22,7 @@ List<String> _listService = new List();
 List<String> _listMachine = new List();
 String _listMachines = '';
 String _listServices = '';
+String responseBody = '';
 
 Future<List<String>> fetchService() async {
   final response = await http.get(apiService);
@@ -199,13 +200,26 @@ Inscription userConnected = new Inscription();
 
 Future<Inscription> isValidUser(
     String email, String password, BuildContext context) async {
-
   _sharedPreferences = await SharedPreferences.getInstance();
-  final response = await http
-      .get(apiConnexion + '?email=' + email + '&password=' + password + '?number=' + email + '&password2=' + password);
+  final response = await http.get(apiConnexion +
+      '?email=' +
+      email +
+      '&password=' +
+      password +
+      '?number=' +
+      email +
+      '&password2=' +
+      password);
   var dio = new Dio();
-  final response1 =
-      await dio.get(apiConnexion + '?email=' + email + '&password=' + password + '&number=' + email + '&password2=' + password);
+  final response1 = await dio.get(apiConnexion +
+      '?email=' +
+      email +
+      '&password=' +
+      password +
+      '&number=' +
+      email +
+      '&password2=' +
+      password);
   print('ds' + response1.data.toString());
   if (response1.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -222,8 +236,10 @@ Future<Inscription> isValidUser(
       //    List responseJson = json.decode(response.body);
       //userConnected = Inscription.fromJson(json.decode(response1.data));
       _sharedPreferences.setString("user", response1.data[0].toString());
-      _sharedPreferences.setString("email", response1.data[0]['email'].toString());
-      _sharedPreferences.setString("userType", response1.data[0]['userType'].toString());
+      _sharedPreferences.setString(
+          "email", response1.data[0]['email'].toString());
+      _sharedPreferences.setString(
+          "userType", response1.data[0]['userType'].toString());
       check = true;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginLoading()));
@@ -241,19 +257,26 @@ Future<Inscription> isValidUser(
   }
 }
 
-Future<bool> checkExistReservation (String date, String time, String machine) async{
-  final response = await http
-      .get(apiReservationByCoord + '?date=' + date + '&time=' + time + '&machine=' + machine);
-  //print(response.body);
-  return response.body.length > 2;
+Future<String> checkExistReservation(
+    String date, String time, String machine) async {
+  final response = await http.get(apiReservationByCoord +
+      '?date=' +
+      date +
+      '&time=' +
+      time +
+      '&machine=' +
+      machine);
+  var dio = new Dio();
+  print('hum' + response.body);
+  responseBody = response.body;
+  return response.body;
 }
 
 List<Place> places = new List<Place>();
 
 Future<List<Place>> getReservation(String email) async {
   places.clear();
-  final response = await http
-      .get(apiReservationByEmail + '?email=' + email);
+  final response = await http.get(apiReservationByEmail + '?email=' + email);
   var dio = new Dio();
   final response1 = await dio.get(apiReservationByEmail + '?email=' + email);
 

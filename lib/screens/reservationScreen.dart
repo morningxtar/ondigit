@@ -236,6 +236,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                 ),
                 DropdownButtonFormField(
                   validator: (int value) {
+                    print('object ' + value.toString());
                     if (value == null)
                       return 'Champ obligatoire';
                     return null;
@@ -257,6 +258,12 @@ class ReservationSreenState extends State<ReservationSreen> {
                       ))
                       .toList(),
                   onChanged: (value) {
+                    setState(() {
+                      selected2 = value;
+                      _place.timeReservation = _place.timeReservation + ',' + (int.parse(_place.timeReservation) + int.parse(selected2.toString())).toString();
+                    });
+                  },
+                  onSaved: (value) {
                     setState(() {
                       selected2 = value;
                       _place.timeReservation = _place.timeReservation + ',' + (int.parse(_place.timeReservation) + int.parse(selected2.toString())).toString();
@@ -308,7 +315,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                         print(_place.access);
                         checkExistReservation(_place.dateReservation, _place.timeReservation, _place.computerNumber).then((value) {
 //                          print('tr '+value.toString());
-                          if(value)
+                          if(value.length > 0)
                           {
                             final snackBar = SnackBar(
                               behavior: SnackBarBehavior.floating,
