@@ -1,4 +1,6 @@
-const host = 'http://192.168.8.154:888/';
+const prodHost = 'http://105.235.30.236:888/';
+const devHost = 'http://192.168.8.154:888/';
+const host = prodHost;
 
 const apiService = host + 'listServices';
 const apiMachines = host + 'listMachines';

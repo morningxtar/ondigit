@@ -141,6 +141,20 @@ class InscriptioncreenState extends State<InscriptionSreen> {
           ),
           Container(
             color: Color(0xfff5f5f5),
+            child: TextFormField(maxLength: 8,autovalidate: true,
+              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Numéro CNI ou numéro Carte scolaire',
+                  prefixIcon: Icon(Icons.smartphone),
+                  labelStyle: TextStyle(fontSize: 15)),
+              onSaved: (String value) {
+                _inscription.identity = value;
+              },
+            ),
+          ),
+          Container(
+            color: Color(0xfff5f5f5),
             child: TextFormField(autovalidate: true,
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               decoration: InputDecoration(

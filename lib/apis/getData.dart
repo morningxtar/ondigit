@@ -71,7 +71,7 @@ Future<List<Machine>> fetchMachine() async {
       _machine.add(machine);
       _listMachines = _listMachines + response1.data[i]['libelle'] + ',';
     }
-//    print(_machine);
+    print(_listMachines);
     _sharedPreferences.setString('machines', _listMachines);
     return _machine;
 //    List responseJson = json.decode(response.body);
@@ -93,6 +93,7 @@ Future<Inscription> createUser(Inscription user) async {
       'firstName': user.firstName,
       'lastName': user.lastName,
       'phoneNumber': user.phoneNumber,
+      'identity': user.identity,
       'email': user.email,
       'password': user.password,
       'comments': user.comments,
@@ -229,6 +230,7 @@ Future<Inscription> isValidUser(
       userConnected.firstName = response1.data[0]['firstName'];
       userConnected.lastName = response1.data[0]['lastName'];
       userConnected.phoneNumber = response1.data[0]['phoneNumber'];
+      userConnected.phoneNumber = response1.data[0]['identity'];
       userConnected.email = response1.data[0]['email'];
       userConnected.password = response1.data[0]['password'];
       userConnected.comments = response1.data[0]['comments'];

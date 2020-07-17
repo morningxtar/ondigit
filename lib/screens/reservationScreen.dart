@@ -76,8 +76,10 @@ class ReservationSreenState extends State<ReservationSreen> {
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     userType = _sharedPreferences.getString('userType');
+    postes.clear();
+    postes.add('Liste des machines');
     setState(() {
-      postes = _sharedPreferences.getString("machines").split(',');
+      postes.addAll(_sharedPreferences.getString("machines").split(','));
       postes.removeLast();
       services = _sharedPreferences.getString("services").split(',');
       services.removeLast();
@@ -125,10 +127,14 @@ class ReservationSreenState extends State<ReservationSreen> {
   }
 
   Widget reservationForm() {
-    List<DropdownMenuItem> menuPoste = postes.map((val) =>
-        DropdownMenuItem(value: val, child: Text(val))).toList();
-    List<DropdownMenuItem> menuService = services.map((val) =>
-        DropdownMenuItem(value: val, child: Text(val))).toList();
+    List<DropdownMenuItem> menuPoste;
+    List<DropdownMenuItem> menuService;
+    setState(() {
+      menuPoste = postes.map((val) =>
+          DropdownMenuItem(value: val, child: Text(val))).toList();
+      menuService = services.map((val) =>
+          DropdownMenuItem(value: val, child: Text(val))).toList();
+    });
     return Form(
       key: _formKey,
       child: ListView(
@@ -230,14 +236,13 @@ class ReservationSreenState extends State<ReservationSreen> {
                     setState(() {
                       numberHours(value);
                       selected = value;
-                      _place.timeReservation = selected.toString();
                     });
                   },
                 ),
                 DropdownButtonFormField(
                   validator: (int value) {
                     print('object ' + value.toString());
-                    if (value == null)
+                    if (value == null || value == 0)
                       return 'Champ obligatoire';
                     return null;
                   },
@@ -260,13 +265,6 @@ class ReservationSreenState extends State<ReservationSreen> {
                   onChanged: (value) {
                     setState(() {
                       selected2 = value;
-                      _place.timeReservation = _place.timeReservation + ',' + (int.parse(_place.timeReservation) + int.parse(selected2.toString())).toString();
-                    });
-                  },
-                  onSaved: (value) {
-                    setState(() {
-                      selected2 = value;
-                      _place.timeReservation = _place.timeReservation + ',' + (int.parse(_place.timeReservation) + int.parse(selected2.toString())).toString();
                     });
                   },
                 ),
@@ -277,8 +275,9 @@ class ReservationSreenState extends State<ReservationSreen> {
           Container(
             color: Color(0xfff5f5f5),
             child: DropdownButtonFormField(
-              validator: (dynamic value) {
-                if (value == null)
+              value: 'Liste des machines',
+              validator: (value) {
+                if (value == null || value == 'Liste des machines')
                   return 'Champ obligatoire';
                 return null;
               },
@@ -294,6 +293,9 @@ class ReservationSreenState extends State<ReservationSreen> {
               onChanged: (value) {
                 _place.computerNumber = value;
               },
+              onSaved: (value) {
+                _place.computerNumber = value;
+              },
             ),
           ),
           Padding(
@@ -306,6 +308,9 @@ class ReservationSreenState extends State<ReservationSreen> {
                       await SharedPreferences.getInstance();
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
+                        var auxVal = selected  + selected2;
+                        print(selected.toString());
+                        _place.timeReservation = selected.toString() + ',$auxVal';
                         print(_place.id);
                         print(_place.serviceType);
                         print(_place.dateReservation);
@@ -319,7 +324,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                           {
                             final snackBar = SnackBar(
                               behavior: SnackBarBehavior.floating,
-                              content: Text('La place est déjà réservée par une autre personne!'),
+                              content: Text(value),
 
                               backgroundColor: Colors.red.shade900,
                             );
@@ -331,6 +336,7 @@ class ReservationSreenState extends State<ReservationSreen> {
                             _place.access = 1;
                         createReservation(_place).then((value) {
                           print(value);
+                          _place.timeReservation = '';
                           final snackBar = SnackBar(
                             behavior: SnackBarBehavior.floating,
                             content: Text('Réservation effectuée!'),

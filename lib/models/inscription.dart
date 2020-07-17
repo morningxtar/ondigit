@@ -4,6 +4,7 @@ class Inscription {
   String firstName;
   String lastName;
   String phoneNumber;
+  String identity;
   String email;
   String password;
   String comments;
@@ -14,6 +15,7 @@ class Inscription {
     this.firstName,
     this.lastName,
     this.phoneNumber,
+    this.identity,
     this.email,
     this.password,
     this.comments,
@@ -26,6 +28,7 @@ class Inscription {
       firstName: json['firstName'],
       lastName: json['lastName'],
       phoneNumber: json['phoneNumber'],
+      identity: json['identity'],
       email: json['email'],
       password: json['password'],
       comments: json['comments'],
