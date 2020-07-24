@@ -58,21 +58,22 @@ Future<List<Machine>> fetchMachine() async {
   var dio = new Dio();
   final response1 = await dio.get(apiMachines);
   _sharedPreferences = await SharedPreferences.getInstance();
+  _sharedPreferences.remove('machines');
   if (response1.statusCode == 200) {
-    print(response1.data);
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    for (var i = 0; i < response1.data.length; i++) {
-      Machine machine = new Machine(
-        id: response1.data[i]['id'],
-        libelle: response1.data[i]['libelle'],
-      );
-      //_listMachine.add(response1.data[i]['libelle']);
-      _machine.add(machine);
-      _listMachines = _listMachines + response1.data[i]['libelle'] + ',';
-    }
-    print(_listMachines);
-    _sharedPreferences.setString('machines', _listMachines);
+    _listMachines = '';
+      for (var i = 0; i < response1.data.length; i++) {
+        Machine machine = new Machine(
+          id: response1.data[i]['id'],
+          libelle: response1.data[i]['libelle'],
+        );
+        //_listMachine.add(response1.data[i]['libelle']);
+        _machine.add(machine);
+        _listMachines = _listMachines + response1.data[i]['libelle'] + ',';
+      }
+      print(_listMachines);
+      _sharedPreferences.setString('machines', _listMachines);
     return _machine;
 //    List responseJson = json.decode(response.body);
 //    return responseJson.map((m) => new Service.fromJson(m)).toList();

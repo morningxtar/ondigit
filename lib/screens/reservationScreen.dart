@@ -24,7 +24,7 @@ class ReservationSreenState extends State<ReservationSreen> {
   List<String> services = [];
   List<int> hoursValue = [];
   List<int> hours = [];
-  List<String> postes = List();
+  List<String> postes = ['Liste des machines'];
   Future<List<Machine>> postesFut;
   FocusNode _focusNode;
 
@@ -40,8 +40,7 @@ class ReservationSreenState extends State<ReservationSreen> {
   @override
   void initState() {
     // TODO: implement initState
-    fetchMachine();
-    fetchService();
+
     super.initState();
     _focusNode = FocusNode();
     setState(() {
@@ -60,9 +59,11 @@ class ReservationSreenState extends State<ReservationSreen> {
       day = DateTime
           .now()
           .hour;
+      fetchMachine();
+      fetchService();
+      instancingSharedPref();
     });
 
-    instancingSharedPref();
   }
 
   @override
@@ -76,9 +77,9 @@ class ReservationSreenState extends State<ReservationSreen> {
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     userType = _sharedPreferences.getString('userType');
-    postes.clear();
-    postes.add('Liste des machines');
+
     setState(() {
+      print('rere ' + _sharedPreferences.getString("machines").toString());
       postes.addAll(_sharedPreferences.getString("machines").split(','));
       postes.removeLast();
       services = _sharedPreferences.getString("services").split(',');
@@ -241,7 +242,6 @@ class ReservationSreenState extends State<ReservationSreen> {
                 ),
                 DropdownButtonFormField(
                   validator: (int value) {
-                    print('object ' + value.toString());
                     if (value == null || value == 0)
                       return 'Champ obligatoire';
                     return null;
