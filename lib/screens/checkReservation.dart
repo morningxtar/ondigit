@@ -32,6 +32,7 @@ class CheckSreenState extends State<CheckSreen> {
     super.initState();
   }
 
+  //instancie une sharedpreference
   instancingSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
@@ -136,6 +137,7 @@ class CheckSreenState extends State<CheckSreen> {
     );
   }
 
+  //fonction qui permet de décripter un string crypter
   decryptString(encrypted) {
     final key = encrypt.Key.fromUtf8('my 32 length key................');
     final iv = IV.fromLength(16);

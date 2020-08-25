@@ -116,6 +116,7 @@ Widget drawer(BuildContext context, String userType) {
 
 SharedPreferences _sharedPreferences;
 
+//fonction qui permet de se déconnecter de l'application
 logout(BuildContext context) async {
   _sharedPreferences = await SharedPreferences.getInstance();
   _sharedPreferences.clear();

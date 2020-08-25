@@ -393,6 +393,7 @@ class ReservationSreenState extends State<ReservationSreen> {
             )));
   }
 
+  //methode qui modifie un tableau en fonction de l'heure choisie
   void hoursControl(DateTime dateChosen, DateTime currentDate) {
     int timeOver;
     hoursValue.clear();
@@ -419,6 +420,7 @@ class ReservationSreenState extends State<ReservationSreen> {
     }
   }
 
+  //méthode qui controle le nombre d'heure qu'on peut choisir
   void numberHours(hourDeb){
     hours.clear();
     print(hourDeb);

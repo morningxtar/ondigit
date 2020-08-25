@@ -44,8 +44,6 @@ class HistoriqueReservationState extends State<HistoriqueReservationSreen> {
     super.initState();
     instancingSharedPref();
 
-    print(cryptString('1'));
-    print(decryptString('OuOM4y/Ol/V0PMdHq3WFvw=='));
   }
 
   Widget historiquereservationScreen() {

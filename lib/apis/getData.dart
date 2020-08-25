@@ -24,6 +24,7 @@ String _listMachines = '';
 String _listServices = '';
 String responseBody = '';
 
+//fonction qui récupère les intitulés des services de la case numérique
 Future<List<String>> fetchService() async {
   final response = await http.get(apiService);
   var dio = new Dio();
@@ -53,6 +54,7 @@ Future<List<String>> fetchService() async {
   }
 }
 
+//fonction qui récupère les intitulés des machines de la case numérique
 Future<List<Machine>> fetchMachine() async {
   final response = await http.get(apiMachines);
   var dio = new Dio();
@@ -84,6 +86,7 @@ Future<List<Machine>> fetchMachine() async {
   }
 }
 
+//fonction qui ajoute un utilisateur
 Future<Inscription> createUser(Inscription user) async {
   final http.Response response = await http.post(
     apiCreateUser,
@@ -120,6 +123,7 @@ Future<Inscription> createUser(Inscription user) async {
   }
 }
 
+//fonction qui créé une réservation
 Future<Place> createReservation(Place place) async {
   final http.Response response = await http.post(
     apiSaveReservation,
@@ -148,6 +152,7 @@ Future<Place> createReservation(Place place) async {
   }
 }
 
+//fonction qui change l'accès d'une réservation
 Future<Place> changeAccess(Place place) async {
   final http.Response response = await http.put(
     apiSaveReservation + '/' + place.id.toString(),
@@ -176,6 +181,7 @@ Future<Place> changeAccess(Place place) async {
   }
 }
 
+//fonction qui teste si l'email appartient déjà à un utilisateur
 Future<bool> testEmail(String email) async {
   final response = await http.get(apiService);
   var dio = new Dio();
@@ -200,6 +206,7 @@ Future<bool> testEmail(String email) async {
 bool check = false;
 Inscription userConnected = new Inscription();
 
+//fonction qui vérifie si les identifiants de connexion sont corrects
 Future<Inscription> isValidUser(
     String email, String password, BuildContext context) async {
   _sharedPreferences = await SharedPreferences.getInstance();
@@ -260,6 +267,7 @@ Future<Inscription> isValidUser(
   }
 }
 
+//fonction qui vérifie si une réservation existe déjà
 Future<String> checkExistReservation(
     String date, String time, String machine) async {
   final response = await http.get(apiReservationByCoord +
@@ -277,6 +285,7 @@ Future<String> checkExistReservation(
 
 List<Place> places = new List<Place>();
 
+//fonction qui retourne la liste des réservation en cours d'un utilisateur
 Future<List<Place>> getReservation(String email) async {
   places.clear();
   final response = await http.get(apiReservationByEmail + '?email=' + email);
